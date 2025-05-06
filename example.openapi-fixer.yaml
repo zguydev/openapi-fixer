@@ -1,0 +1,3 @@
+x-openapi-fixer:
+  logger:
+    level: debug
