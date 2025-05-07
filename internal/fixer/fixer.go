@@ -26,19 +26,19 @@ func NewOpenAPISpecFixer(cfg *config.FixerConfig, logger *zap.Logger) *OpenAPISp
 	}
 }
 
-func (o *OpenAPISpecFixer) Fix(inputSpecPath, outSpecPath, rulesPath string) error {
+func (o *OpenAPISpecFixer) Fix(inputSpecPath, outSpecPath, fixupsPath string) error {
 	doc, err := o.loadSpec(inputSpecPath)
 	if err != nil {
 		return fmt.Errorf("o.loadSpec: %w", err)
 	}
 
-	rules, err := o.loadRules(rulesPath)
+	fixups, err := o.loadFixups(fixupsPath)
 	if err != nil {
-		return fmt.Errorf("o.loadRules: %w", err)
+		return fmt.Errorf("o.loadFixups: %w", err)
 	}
 
-	if err := o.applyFixes(doc, rules); err != nil {
-		return fmt.Errorf("o.applyFixes: %w", err)
+	if err := o.applyFixups(doc, fixups); err != nil {
+		return fmt.Errorf("o.applyFixups: %w", err)
 	}
 
 	if err := o.exportSpec(outSpecPath, doc); err != nil {
@@ -47,14 +47,14 @@ func (o *OpenAPISpecFixer) Fix(inputSpecPath, outSpecPath, rulesPath string) err
 	return nil
 }
 
-func (o *OpenAPISpecFixer) applyFixes(doc *openapi3.T, rules []FixRule) error {
-	for _, rule := range rules {
-		o.logger.Info("applying OpenAPI fix rule",
-			zap.String("rule", rule.Name()))
-		if err := rule.Apply(doc); err != nil {
-			o.logger.Error("failed to apply OpenAPI fix rule",
-				zap.Error(err), zap.String("rule", rule.Name()))
-			return fmt.Errorf("rule.Apply: %w", err)
+func (o *OpenAPISpecFixer) applyFixups(doc *openapi3.T, fixups []OpenAPIFixup) error {
+	for _, fixup := range fixups {
+		o.logger.Info("applying OpenAPI fixup",
+			zap.String("fixup", fixup.Name()))
+		if err := fixup.Apply(doc); err != nil {
+			o.logger.Error("failed to apply OpenAPI fixup",
+				zap.Error(err), zap.String("fixup", fixup.Name()))
+			return fmt.Errorf("fixup.Apply: %w", err)
 		}
 	}
 	return nil

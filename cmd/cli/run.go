@@ -20,9 +20,9 @@ func run(cmd *cobra.Command, args []string) {
 		fallbackLogger.Fatal("failed to get config flag", zap.Error(err))
 	}
 
-	rulesPath, err := cmd.Flags().GetString("rules")
+	fixupsPath, err := cmd.Flags().GetString("fixups")
 	if err != nil {
-		fallbackLogger.Fatal("failed to get rules flag", zap.Error(err))
+		fallbackLogger.Fatal("failed to get fixups flag", zap.Error(err))
 	}
 
 	cfg, err := config.LoadConfig(configPath)
@@ -38,7 +38,7 @@ func run(cmd *cobra.Command, args []string) {
 	}
 
 	oafixer := fixer.NewOpenAPISpecFixer(cfg, logger)
-	if err := oafixer.Fix(args[0], args[1], rulesPath); err != nil {
+	if err := oafixer.Fix(args[0], args[1], fixupsPath); err != nil {
 		logger.Error("fix on spec failed",
 			zap.Error(err))
 		os.Exit(1)
