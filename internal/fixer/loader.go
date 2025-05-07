@@ -3,8 +3,9 @@ package fixer
 import (
 	"fmt"
 	"os"
-	"path/filepath"
+	"os/exec"
 	"plugin"
+	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"go.uber.org/zap"
@@ -28,49 +29,63 @@ func (o *OpenAPISpecFixer) loadSpec(specPath string) (*openapi3.T, error) {
 	return doc, nil
 }
 
-func (o *OpenAPISpecFixer) loadRules(rulesPath string) ([]FixRule, error) {
-	var rules []FixRule
-
-	err := filepath.Walk(rulesPath, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			o.logger.Error("error accessing rules path",
-				zap.Error(err), zap.String("path", path))
-			return fmt.Errorf("func filepath.Walk(%q): %w", path, err)
-		}
-		if info.IsDir() || filepath.Ext(path) != ".so" {
-			return nil
-		}
-
-		p, err := plugin.Open(path)
-		if err != nil {
-			o.logger.Error("failed to load plugin",
-				zap.Error(err), zap.String("path", path))
-			return fmt.Errorf("plugin.Open(%q): %w", path, err)
-		}
-
-		sym, err := p.Lookup("Rule")
-		if err != nil {
-			o.logger.Error("plugin does not export Rule",
-				zap.Error(err), zap.String("path", path))
-			return fmt.Errorf("(%q)p.Lookup: %w", path, err)
-		}
-
-		rule, ok := sym.(FixRule)
-		if !ok {
-			o.logger.Error("plugin has wrong type",
-				zap.Error(err), zap.String("path", path))
-			return fmt.Errorf("(%q)sym.(FixRule): %w", path, err)
-		}
-
-		rules = append(rules, rule)
-		return nil
-	})
+func (o *OpenAPISpecFixer) loadFixups(fixupsPath string) ([]OpenAPIFixup, error) {
+	info, err := os.Stat(fixupsPath)
 	if err != nil {
-		o.logger.Error("failed to walk path for finding plugins",
-			zap.Error(err), zap.String("rulesPath", rulesPath))
-		return nil, fmt.Errorf("filepath.Walk: %w", err)
+		o.logger.Error("error accessing fixups path",
+			zap.Error(err), zap.String("path", fixupsPath))
+		return nil, fmt.Errorf("os.Stat: %w", err)
 	}
-	return rules, nil
+
+	switch {
+	case info.IsDir():
+		o.logger.Info("fixups path specified as directory, trying to build and load as Go plugin")
+
+		soPath := strings.TrimRight(fixupsPath, "/") + ".so"
+		cmd := exec.Command("go", "build", "-buildmode=plugin", "-o", soPath, fixupsPath)
+		cmd.Env = append(os.Environ(), "GO111MODULE=on")
+
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			o.logger.Error("failed to build plugin",
+				zap.Error(err),
+				zap.ByteString("output", output))
+			return nil, fmt.Errorf("failed to build plugin from fixups path %q: %w", fixupsPath, err)
+		}
+		o.logger.Info("built fixups to plugin", zap.String("plugin", soPath))
+		fixupsPath = soPath
+		fallthrough
+
+	case !info.IsDir() && strings.HasSuffix(fixupsPath, ".so"):
+		o.logger.Info("loading fixups as Go plugin")
+
+		p, err := plugin.Open(fixupsPath)
+		if err != nil {
+			o.logger.Error("failed to load fixups path as plugin",
+				zap.Error(err), zap.String("path", fixupsPath))
+			return nil, fmt.Errorf("plugin.Open: %w", err)
+		}
+
+		sym, err := p.Lookup("Fixups")
+		if err != nil {
+			o.logger.Error("fixups plugin does not export Fixups variable",
+				zap.Error(err), zap.String("path", fixupsPath))
+			return nil, fmt.Errorf("p.Lookup: %w", err)
+		}
+
+		fixups, ok := sym.(*[]OpenAPIFixup)
+		if !ok {
+			o.logger.Error("fixups plugin has wrong value type",
+				zap.String("path", fixupsPath))
+			return nil, fmt.Errorf("sym.([]OpenAPIFixup): %w", err)
+		}
+		return *fixups, nil
+
+	default:
+		o.logger.Error("unknown fixups path type",
+			zap.String("path", fixupsPath))
+		return nil, fmt.Errorf("unknown fixups path type")
+	}
 }
 
 func (o *OpenAPISpecFixer) exportSpec(outSpecPath string, doc *openapi3.T) error {
