@@ -1,4 +1,4 @@
-package fixer
+package fixup
 
 import "github.com/getkin/kin-openapi/openapi3"
 

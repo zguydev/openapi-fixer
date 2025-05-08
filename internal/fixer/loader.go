@@ -10,6 +10,8 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
+
+	"github.com/zguydev/openapi-fixer/pkg/fixup"
 )
 
 func (o *OpenAPISpecFixer) loadSpec(specPath string) (*openapi3.T, error) {
@@ -29,7 +31,7 @@ func (o *OpenAPISpecFixer) loadSpec(specPath string) (*openapi3.T, error) {
 	return doc, nil
 }
 
-func (o *OpenAPISpecFixer) loadFixups(fixupsPath string) ([]OpenAPIFixup, error) {
+func (o *OpenAPISpecFixer) loadFixups(fixupsPath string) ([]fixup.OpenAPIFixup, error) {
 	info, err := os.Stat(fixupsPath)
 	if err != nil {
 		o.logger.Error("error accessing fixups path",
@@ -73,11 +75,11 @@ func (o *OpenAPISpecFixer) loadFixups(fixupsPath string) ([]OpenAPIFixup, error)
 			return nil, fmt.Errorf("p.Lookup: %w", err)
 		}
 
-		fixups, ok := sym.(*[]OpenAPIFixup)
+		fixups, ok := sym.(*[]fixup.OpenAPIFixup)
 		if !ok {
 			o.logger.Error("fixups plugin has wrong value type",
 				zap.String("path", fixupsPath))
-			return nil, fmt.Errorf("sym.([]OpenAPIFixup): %w", err)
+			return nil, fmt.Errorf("sym.([]fixup.OpenAPIFixup): %w", err)
 		}
 		return *fixups, nil
 

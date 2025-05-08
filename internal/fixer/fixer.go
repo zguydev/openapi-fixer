@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/zguydev/openapi-fixer/internal/config"
+	"github.com/zguydev/openapi-fixer/pkg/fixup"
 )
 
 type OpenAPISpecFixer struct {
@@ -47,7 +48,7 @@ func (o *OpenAPISpecFixer) Fix(inputSpecPath, outSpecPath, fixupsPath string) er
 	return nil
 }
 
-func (o *OpenAPISpecFixer) applyFixups(doc *openapi3.T, fixups []OpenAPIFixup) error {
+func (o *OpenAPISpecFixer) applyFixups(doc *openapi3.T, fixups []fixup.OpenAPIFixup) error {
 	for _, fixup := range fixups {
 		o.logger.Info("applying OpenAPI fixup",
 			zap.String("fixup", fixup.Name()))

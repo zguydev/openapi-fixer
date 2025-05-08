@@ -1,8 +1,8 @@
 package main
 
-import "github.com/zguydev/openapi-fixer/internal/fixer"
+import "github.com/zguydev/openapi-fixer/pkg/fixup"
 
-var Fixups = []fixer.OpenAPIFixup{
+var Fixups = []fixup.OpenAPIFixup{
 	&DiscriminatorFixup{},
 	&NumberTypeFixup{},
 	&EnumFix{},
