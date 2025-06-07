@@ -6,13 +6,13 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
-type EnumFix struct{}
+type EnumFixup struct{}
 
-func (f *EnumFix) Name() string {
-	return "EnumFix"
+func (f *EnumFixup) Name() string {
+	return "EnumFixup"
 }
 
-func (f *EnumFix) Apply(doc *openapi3.T) error {
+func (f *EnumFixup) Apply(doc *openapi3.T) error {
 	fixes := []struct {
 		fixName string
 		fixFunc func(doc *openapi3.T) error
@@ -34,7 +34,7 @@ func (f *EnumFix) Apply(doc *openapi3.T) error {
 	return nil
 }
 
-func (f *EnumFix) Fix_ModelIdsShared(doc *openapi3.T) error {
+func (f *EnumFixup) Fix_ModelIdsShared(doc *openapi3.T) error {
 	target := "ModelIdsShared"
 
 	schemaRef, ok := doc.Components.Schemas[target]
@@ -50,7 +50,7 @@ func (f *EnumFix) Fix_ModelIdsShared(doc *openapi3.T) error {
 	return nil
 }
 
-func (f *EnumFix) Fix_VoiceIdsShared(doc *openapi3.T) error {
+func (f *EnumFixup) Fix_VoiceIdsShared(doc *openapi3.T) error {
 	target := "VoiceIdsShared"
 
 	schemaRef, ok := doc.Components.Schemas[target]
