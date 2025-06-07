@@ -1,3 +1,5 @@
+# this spec was filtered by openapi-filter: https://github.com/zguydev/openapi-filter/blob/master/examples/OpenAI/filtered.openapi.yaml
+
 components:
   schemas:
     ChatCompletionFunctionCallOption:
