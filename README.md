@@ -29,6 +29,7 @@ go install github.com/zguydev/openapi-fixer@latest
 - [ ] Improved type safety - enums for common types
 - [ ] Dry run mode to report what would change
 - [ ] Feature to check what parts of spec are wrong
+- [ ] Fixups dir generator via CLI
 
 ## Examples
 Explore ready-to-use examples:
