@@ -97,11 +97,11 @@ func (o *OpenAPISpecFixer) exportSpec(outSpecPath string, doc *openapi3.T) error
 			zap.Error(err))
 		return fmt.Errorf("os.Create: %w", err)
 	}
-	defer f.Close()
+	defer f.Close() //nolint:errcheck
 
 	encoder := yaml.NewEncoder(f)
 	encoder.SetIndent(2)
-	defer encoder.Close()
+	defer encoder.Close() //nolint:errcheck
 
 	if err := encoder.Encode(doc); err != nil {
 		o.logger.Error("failed to encode output spec file",

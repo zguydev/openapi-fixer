@@ -44,7 +44,7 @@ func (f *NumberTypeFixup) Fix_CreateChatCompletionRequest(doc *openapi3.T) error
 	allOf := schemaRef.Value.AllOf
 
 	for _, schemaRef := range allOf {
-		if !(schemaRef.Value != nil && len(schemaRef.Value.Properties) != 0) {
+		if schemaRef.Value == nil || len(schemaRef.Value.Properties) == 0 {
 			continue
 		}
 		seed, ok := schemaRef.Value.Properties["seed"]

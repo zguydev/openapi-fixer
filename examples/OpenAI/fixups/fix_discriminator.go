@@ -9,7 +9,7 @@ import (
 type DiscriminatorFixup struct{}
 
 func (f *DiscriminatorFixup) Name() string {
-	return "FixDiscriminator"
+	return "DiscriminatorFixup"
 }
 
 func (f *DiscriminatorFixup) Apply(doc *openapi3.T) error {
@@ -76,7 +76,7 @@ func (f *DiscriminatorFixup) Fix_CreateChatCompletionRequest(doc *openapi3.T) er
 
 	allOf := schemaRef.Value.AllOf
 	for _, schemaRef := range allOf {
-		if !(schemaRef.Value != nil && len(schemaRef.Value.Properties) != 0) {
+		if schemaRef.Value == nil || len(schemaRef.Value.Properties) == 0 {
 			continue
 		}
 		responseFormat, ok := schemaRef.Value.Properties["response_format"]
