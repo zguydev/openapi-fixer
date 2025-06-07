@@ -12,10 +12,23 @@
 go install github.com/zguydev/openapi-fixer@latest
 ```
 
-### Usage
+## Usage
 ```go
 //go:generate go run github.com/zguydev/openapi-fixer openapi.yaml fixed.openapi.yaml --fixups ./fixups/ --config .openapi-fixer.yaml
 ```
+
+## Planned
+
+- [ ] Helper package for comon repeated schema validation and access patterns
+- [ ] Feature to use YAML config files for mappings and targets instead of hardcoding to fixups
+- [ ] Generic fixup types
+- [ ] Logging to track fixups apply
+- [ ] More descriptive error messages, include context in errors (to tell which schema/property failed)
+- [ ] Fixup chaining to allow them depend on each other
+- [ ] Fixups progress reporting
+- [ ] Improved type safety - enums for common types
+- [ ] Dry run mode to report what would change
+- [ ] Feature to check what parts of spec are wrong
 
 ## Examples
 Explore ready-to-use examples:
