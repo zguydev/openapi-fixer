@@ -4,9 +4,13 @@ import (
 	"fmt"
 
 	"github.com/getkin/kin-openapi/openapi3"
+
+	"github.com/zguydev/openapi-fixer/pkg/fixup"
 )
 
-type EnumFixup struct{}
+type EnumFixup struct {
+	fixup.OpenAPIFixup
+}
 
 func (f *EnumFixup) Name() string {
 	return "EnumFixup"
@@ -18,12 +22,12 @@ func (f *EnumFixup) Apply(doc *openapi3.T) error {
 		fixFunc func(doc *openapi3.T) error
 	}{
 		{
-			"f.Fix_ModelIdsShared",
-			f.Fix_ModelIdsShared,
+			"f.fix_ModelIdsShared",
+			f.fix_ModelIdsShared,
 		},
 		{
-			"f.Fix_VoiceIdsShared",
-			f.Fix_VoiceIdsShared,
+			"f.fix_VoiceIdsShared",
+			f.fix_VoiceIdsShared,
 		},
 	}
 	for _, fix := range fixes {
@@ -34,7 +38,7 @@ func (f *EnumFixup) Apply(doc *openapi3.T) error {
 	return nil
 }
 
-func (f *EnumFixup) Fix_ModelIdsShared(doc *openapi3.T) error {
+func (f *EnumFixup) fix_ModelIdsShared(doc *openapi3.T) error {
 	target := "ModelIdsShared"
 
 	schemaRef, ok := doc.Components.Schemas[target]
@@ -50,7 +54,7 @@ func (f *EnumFixup) Fix_ModelIdsShared(doc *openapi3.T) error {
 	return nil
 }
 
-func (f *EnumFixup) Fix_VoiceIdsShared(doc *openapi3.T) error {
+func (f *EnumFixup) fix_VoiceIdsShared(doc *openapi3.T) error {
 	target := "VoiceIdsShared"
 
 	schemaRef, ok := doc.Components.Schemas[target]

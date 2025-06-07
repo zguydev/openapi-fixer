@@ -4,9 +4,13 @@ import (
 	"fmt"
 
 	"github.com/getkin/kin-openapi/openapi3"
+
+	"github.com/zguydev/openapi-fixer/pkg/fixup"
 )
 
-type NumberTypeFixup struct{}
+type NumberTypeFixup struct {
+	fixup.OpenAPIFixup
+}
 
 func (f *NumberTypeFixup) Name() string {
 	return "NumberTypeFixup"
@@ -18,8 +22,8 @@ func (f *NumberTypeFixup) Apply(doc *openapi3.T) error {
 		fixFunc func(doc *openapi3.T) error
 	}{
 		{
-			"f.Fix_CreateChatCompletionRequest",
-			f.Fix_CreateChatCompletionRequest,
+			"f.fix_CreateChatCompletionRequest",
+			f.fix_CreateChatCompletionRequest,
 		},
 	}
 	for _, fix := range fixes {
@@ -30,7 +34,7 @@ func (f *NumberTypeFixup) Apply(doc *openapi3.T) error {
 	return nil
 }
 
-func (f *NumberTypeFixup) Fix_CreateChatCompletionRequest(doc *openapi3.T) error {
+func (f *NumberTypeFixup) fix_CreateChatCompletionRequest(doc *openapi3.T) error {
 	target := "CreateChatCompletionRequest"
 
 	schemaRef, ok := doc.Components.Schemas[target]

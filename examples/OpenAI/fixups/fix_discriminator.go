@@ -4,9 +4,13 @@ import (
 	"fmt"
 
 	"github.com/getkin/kin-openapi/openapi3"
+
+	"github.com/zguydev/openapi-fixer/pkg/fixup"
 )
 
-type DiscriminatorFixup struct{}
+type DiscriminatorFixup struct {
+	fixup.OpenAPIFixup
+}
 
 func (f *DiscriminatorFixup) Name() string {
 	return "DiscriminatorFixup"
@@ -18,12 +22,12 @@ func (f *DiscriminatorFixup) Apply(doc *openapi3.T) error {
 		fixFunc func(doc *openapi3.T) error
 	}{
 		{
-			"f.Fix_ChatCompletionRequestMessage",
-			f.Fix_ChatCompletionRequestMessage,
+			"f.fix_ChatCompletionRequestMessage",
+			f.fix_ChatCompletionRequestMessage,
 		},
 		{
-			"f.Fix_CreateChatCompletionRequest",
-			f.Fix_CreateChatCompletionRequest,
+			"f.fix_CreateChatCompletionRequest",
+			f.fix_CreateChatCompletionRequest,
 		},
 	}
 	for _, fix := range fixes {
@@ -34,7 +38,7 @@ func (f *DiscriminatorFixup) Apply(doc *openapi3.T) error {
 	return nil
 }
 
-func (f *DiscriminatorFixup) Fix_ChatCompletionRequestMessage(doc *openapi3.T) error {
+func (f *DiscriminatorFixup) fix_ChatCompletionRequestMessage(doc *openapi3.T) error {
 	target := "ChatCompletionRequestMessage"
 	discriminatorProperty := "role"
 	mapping := map[string]string{
@@ -57,7 +61,7 @@ func (f *DiscriminatorFixup) Fix_ChatCompletionRequestMessage(doc *openapi3.T) e
 	return nil
 }
 
-func (f *DiscriminatorFixup) Fix_CreateChatCompletionRequest(doc *openapi3.T) error {
+func (f *DiscriminatorFixup) fix_CreateChatCompletionRequest(doc *openapi3.T) error {
 	target := "CreateChatCompletionRequest"
 	discriminatorProperty := "type"
 	mapping := map[string]string{
