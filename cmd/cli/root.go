@@ -7,8 +7,8 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "openapi-fixer input output --fixups fixups_path --config fixer_config",
-	Short: "Fix an OpenAPI spec to selectively comply for example with code generators",
+	Use:   "openapi-fixer input_file output_file --fixups fixups_path --config fixer_config",
+	Short: "A powerful tool to fix OpenAPI spec to ensure compatibility with various code generators and tools",
 	Args:  cobra.ExactArgs(2),
 	Run:   run,
 }
@@ -20,8 +20,7 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().String("config", "openapi-fixer.yaml", "Path to fixer config")
+	rootCmd.Flags().String("config", ".openapi-fixer.yaml", "Path to fixer config")
 	rootCmd.Flags().String("fixups", "./fixups/", "Path to fixups")
-	_ = rootCmd.MarkFlagRequired("config")
 	_ = rootCmd.MarkFlagRequired("fixups")
 }
